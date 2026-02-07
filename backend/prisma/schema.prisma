@@ -1,0 +1,164 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model UserProfile {
+  id                        String    @id @default(uuid())
+  email                     String    @unique
+  passwordHash              String
+  energyAccountId           String?
+  energyAccountCredentials  String?   // Encrypted
+  createdAt                 DateTime  @default(now())
+  lastLoginAt               DateTime?
+  
+  solarSystem               SolarSystem?
+  electricVehicles          ElectricVehicle[]
+  homeBatteries             HomeBattery[]
+  consumptionData           ConsumptionDataPoint[]
+  tariffStructures          TariffStructure[]
+  solarForecasts            SolarForecast[]
+  energyAdvice              EnergyAdvice[]
+  eventParticipations       EventParticipation[]
+}
+
+model SolarSystem {
+  id            String    @id @default(uuid())
+  userId        String    @unique
+  user          UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hasSolar      Boolean   @default(false)
+  systemSizeKw  Float?
+  tiltDegrees   Float?
+  orientation   String?   // N, NE, E, SE, S, SW, W, NW
+  updatedAt     DateTime  @updatedAt
+}
+
+model ElectricVehicle {
+  id                  String    @id @default(uuid())
+  userId              String
+  user                UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  make                String
+  model               String
+  batteryCapacityKwh  Float
+  chargingSpeedKw     Float     @default(7.0)
+  averageDailyMiles   Float
+  createdAt           DateTime  @default(now())
+}
+
+model HomeBattery {
+  id            String    @id @default(uuid())
+  userId        String
+  user          UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  powerKw       Float
+  capacityKwh   Float
+  createdAt     DateTime  @default(now())
+}
+
+model ConsumptionDataPoint {
+  id              String    @id @default(uuid())
+  userId          String
+  user            UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  timestamp       DateTime
+  consumptionKwh  Float
+  retrievedAt     DateTime  @default(now())
+  
+  @@unique([userId, timestamp])
+  @@index([userId, timestamp])
+}
+
+model TariffStructure {
+  id            String    @id @default(uuid())
+  userId        String
+  user          UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  effectiveDate DateTime
+  periods       TariffPeriod[]
+  
+  @@index([userId, effectiveDate])
+}
+
+model TariffPeriod {
+  id                String    @id @default(uuid())
+  tariffStructureId String
+  tariffStructure   TariffStructure @relation(fields: [tariffStructureId], references: [id], onDelete: Cascade)
+  name              String    // off-peak, shoulder, peak
+  startTime         String    // HH:MM format
+  endTime           String    // HH:MM format
+  pricePerKwh       Float
+  daysOfWeek        String    // Comma-separated: MON,TUE,WED,THU,FRI,SAT,SUN
+}
+
+model SolarForecast {
+  id            String    @id @default(uuid())
+  userId        String
+  user          UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  forecastDate  DateTime
+  intervals     SolarInterval[]
+  generatedAt   DateTime  @default(now())
+  
+  @@unique([userId, forecastDate])
+  @@index([userId, forecastDate])
+}
+
+model SolarInterval {
+  id              String    @id @default(uuid())
+  solarForecastId String
+  solarForecast   SolarForecast @relation(fields: [solarForecastId], references: [id], onDelete: Cascade)
+  startTime       DateTime
+  endTime         DateTime
+  generationKwh   Float
+}
+
+model EnergyAdvice {
+  id                    String    @id @default(uuid())
+  userId                String
+  user                  UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date                  DateTime
+  adviceType            String    // GENERAL, EV_CHARGING, BATTERY_CHARGING
+  priority              Int       // 1-3
+  title                 String
+  description           String
+  recommendedTimeStart  String?   // HH:MM format
+  recommendedTimeEnd    String?   // HH:MM format
+  estimatedSavingsDollars Float?
+  createdAt             DateTime  @default(now())
+  
+  @@index([userId, date])
+}
+
+model EnergyEvent {
+  id                    String    @id @default(uuid())
+  eventType             String    // INCREASE_CONSUMPTION, DECREASE_CONSUMPTION
+  startTime             DateTime
+  endTime               DateTime
+  incentiveDescription  String
+  incentiveAmountDollars Float
+  targetUserIds         String    // Comma-separated user IDs
+  createdAt             DateTime  @default(now())
+  
+  participations        EventParticipation[]
+  
+  @@index([startTime, endTime])
+}
+
+model EventParticipation {
+  id                      String    @id @default(uuid())
+  userId                  String
+  user                    UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventId                 String
+  event                   EnergyEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  baselineConsumptionKwh  Float
+  actualConsumptionKwh    Float
+  performanceDeltaKwh     Float
+  earnedIncentiveDollars  Float
+  createdAt               DateTime  @default(now())
+  
+  @@unique([userId, eventId])
+  @@index([userId])
+}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Tariff Data</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        .interval { padding: 5px; border-bottom: 1px solid #ccc; }
+        .price-0 { background-color: #ffcccc; }
+    </style>
+</head>
+<body>
+    <h1>Tomorrow's Tariff Data</h1>
+    <div id="output"></div>
+    
+    <script>
+        const token = localStorage.getItem('auth_token');
+        
+        fetch('http://localhost:3001/api/daily-assistant/chart-data?date=tomorrow', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            const output = document.getElementById('output');
+            
+            output.innerHTML = `<h2>Date: ${data.date}</h2>`;
+            
+            const prices = data.intervals.map(i => i.pricePerKwh);
+            const zeroPrices = prices.filter(p => p === 0).length;
+            
+            output.innerHTML += `<p><strong>Summary:</strong></p>`;
+            output.innerHTML += `<p>Min price: $${Math.min(...prices).toFixed(2)}</p>`;
+            output.innerHTML += `<p>Max price: $${Math.max(...prices).toFixed(2)}</p>`;
+            output.innerHTML += `<p>Zero prices: ${zeroPrices}</p>`;
+            output.innerHTML += `<p>Unique prices: ${[...new Set(prices)].map(p => '$' + p.toFixed(2)).join(', ')}</p>`;
+            
+            output.innerHTML += `<h3>All Intervals:</h3>`;
+            
+            data.intervals.forEach((interval, i) => {
+                const className = interval.pricePerKwh === 0 ? 'interval price-0' : 'interval';
+                output.innerHTML += `
+                    <div class="${className}">
+                        ${i}. ${interval.startTime}-${interval.endTime}: 
+                        $${interval.pricePerKwh.toFixed(2)} 
+                        (${interval.periodName || 'NO PERIOD'})
+                    </div>
+                `;
+            });
+        })
+        .catch(err => {
+            document.getElementById('output').innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
+        });
+    </script>
+</body>
+</html>
