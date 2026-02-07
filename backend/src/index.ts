@@ -44,12 +44,10 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
   res.status(500).json({ error: 'Internal server error' });
 });
 
-// Only listen if this file is run directly (not imported for testing)
-// In ES modules, we check if import.meta.url matches the main module
-const isMainModule = process.argv[1] && process.argv[1].endsWith('index.ts') || process.argv[1]?.endsWith('index.js');
-if (isMainModule) {
+// Start server (skip in test environment)
+if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
-    console.log(`Backend server running on http://localhost:${PORT}`);
+    console.log(`Backend server running on port ${PORT}`);
   });
 }
 
