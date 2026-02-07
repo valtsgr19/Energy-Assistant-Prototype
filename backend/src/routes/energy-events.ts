@@ -5,8 +5,8 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { prisma } from '../lib/prisma';
-import { authenticateToken } from '../lib/auth';
+import { prisma } from '../lib/prisma.js';
+import { authenticateToken } from '../lib/auth.js';
 
 const router = Router();
 
