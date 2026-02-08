@@ -6,7 +6,7 @@
  * 2. Tariff Chart: Time-of-use pricing
  */
 
-import { ComposedChart, Area, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ReferenceArea } from 'recharts';
+import { ComposedChart, Area, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ReferenceArea } from 'recharts';
 import { ChartDataResponse } from '../api/dailyAssistant';
 
 interface EnergyChartProps {
