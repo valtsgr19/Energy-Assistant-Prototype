@@ -235,6 +235,7 @@ export default function EnergyChart({ data, showCurrentTime = false }: EnergyCha
             <Bar
               dataKey="consumption"
               fill="#3b82f6"
+              fillOpacity={0.7}
               name="Consumption"
               radius={[4, 4, 0, 0]}
             />
@@ -315,6 +316,7 @@ export default function EnergyChart({ data, showCurrentTime = false }: EnergyCha
             <Bar
               dataKey="consumption"
               fill="#3b82f6"
+              fillOpacity={0.7}
               name="Consumption"
               radius={[4, 4, 0, 0]}
             />

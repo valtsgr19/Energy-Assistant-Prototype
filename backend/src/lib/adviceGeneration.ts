@@ -205,14 +205,9 @@ function generateEventAdvice(energyEvents: any[], date: Date): EnergyAdvice[] {
     const startTime = new Date(event.startTime);
     const endTime = new Date(event.endTime);
 
-    // Format times
-    const startHour = startTime.getHours();
-    const startMinute = startTime.getMinutes();
-    const endHour = endTime.getHours();
-    const endMinute = endTime.getMinutes();
-
-    const startTimeStr = formatTime(startHour, startMinute);
-    const endTimeStr = formatTime(endHour, endMinute);
+    // Format times in HH:MM format (using local timezone)
+    const startTimeStr = formatTime(startTime.getHours(), startTime.getMinutes());
+    const endTimeStr = formatTime(endTime.getHours(), endTime.getMinutes());
 
     if (event.eventType === 'INCREASE_CONSUMPTION') {
       advice.push({
