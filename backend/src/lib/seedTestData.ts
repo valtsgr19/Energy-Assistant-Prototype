@@ -173,6 +173,13 @@ export async function seedTestData(userId: string, includeEV: boolean = false) {
       targetUserIds: userId
     }
   });
+  
+  // One-time cleanup: delete old 'ALL' events (from before we made events user-specific)
+  await prisma.energyEvent.deleteMany({
+    where: {
+      targetUserIds: 'ALL'
+    }
+  });
 
   const events = [];
   const today = new Date();
