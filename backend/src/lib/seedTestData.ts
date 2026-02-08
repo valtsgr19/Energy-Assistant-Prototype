@@ -195,8 +195,6 @@ export async function seedTestData(userId: string, includeEV: boolean = false) {
     // DECREASE: during peak demand (18:00-22:00)
     const eventType = day % 4 === 0 ? 'INCREASE_CONSUMPTION' : 'DECREASE_CONSUMPTION';
     
-    console.log(`Day ${day}: ${eventType}`);
-    
     let startHour: number;
     let duration: number;
     
@@ -209,7 +207,6 @@ export async function seedTestData(userId: string, includeEV: boolean = false) {
       if (endHour > 14) {
         duration = 14 - startHour;
       }
-      console.log(`  INCREASE: ${startHour}:00 + ${duration}h = ${startHour + duration}:00`);
     } else {
       // DECREASE events: 18:00-22:00, max 2 hours duration
       startHour = 18 + Math.floor(Math.random() * 3); // 18, 19, or 20
@@ -219,7 +216,6 @@ export async function seedTestData(userId: string, includeEV: boolean = false) {
       if (endHour > 22) {
         duration = 22 - startHour;
       }
-      console.log(`  DECREASE: ${startHour}:00 + ${duration}h = ${startHour + duration}:00`);
     }
     
     const startTime = new Date(eventDate);
@@ -227,8 +223,6 @@ export async function seedTestData(userId: string, includeEV: boolean = false) {
     
     const endTime = new Date(startTime);
     endTime.setHours(startTime.getHours() + duration);
-    
-    console.log(`  Start: ${startTime.toISOString()}, End: ${endTime.toISOString()}, Duration: ${duration} hours`);
     
     events.push({
       eventType,
