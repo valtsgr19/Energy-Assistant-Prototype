@@ -417,11 +417,11 @@ export default function EnergyChart({ data, showCurrentTime = false }: EnergyCha
 
         {/* Time period labels */}
         <div className="mt-2 sm:mt-4 flex justify-between text-xs text-gray-500">
-          <span>12 AM</span>
-          <span className="hidden sm:inline">6 AM</span>
-          <span>Noon</span>
-          <span className="hidden sm:inline">6 PM</span>
-          <span>12 AM</span>
+          <span>00:00</span>
+          <span className="hidden sm:inline">06:00</span>
+          <span>12:00</span>
+          <span className="hidden sm:inline">18:00</span>
+          <span>24:00</span>
         </div>
       </div>
 
@@ -542,11 +542,11 @@ export default function EnergyChart({ data, showCurrentTime = false }: EnergyCha
 
         {/* Time period labels */}
         <div className="mt-2 sm:mt-4 flex justify-between text-xs text-gray-500">
-          <span>12 AM</span>
-          <span className="hidden sm:inline">6 AM</span>
-          <span>Noon</span>
-          <span className="hidden sm:inline">6 PM</span>
-          <span>12 AM</span>
+          <span>00:00</span>
+          <span className="hidden sm:inline">06:00</span>
+          <span>12:00</span>
+          <span className="hidden sm:inline">18:00</span>
+          <span>24:00</span>
         </div>
       </div>
     </div>
