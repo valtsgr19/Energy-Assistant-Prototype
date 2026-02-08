@@ -219,10 +219,10 @@ export async function seedTestData(userId: string, includeEV: boolean = false) {
     }
     
     const startTime = new Date(eventDate);
-    startTime.setHours(startHour, 0, 0, 0);
+    startTime.setUTCHours(startHour, 0, 0, 0);
     
     const endTime = new Date(startTime);
-    endTime.setHours(startTime.getHours() + duration);
+    endTime.setUTCHours(startTime.getUTCHours() + duration);
     
     events.push({
       eventType,
