@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Energy Events Frontend</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    .step {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border-left: 4px solid #4CAF50;
+      border-radius: 4px;
+    }
+    .result {
+      margin: 10px 0;
+      padding: 10px;
+      background: #e8f5e9;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .error {
+      background: #ffebee;
+      border-left-color: #f44336;
+    }
+    button {
+      background: #2196F3;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px 5px;
+    }
+    button:hover {
+      background: #1976D2;
+    }
+    .info {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 Energy Events Frontend Test</h1>
+    
+    <div class="info">
+      <strong>Instructions:</strong>
+      <ol>
+        <li>Click "Run Test" to create a new user and fetch chart data</li>
+        <li>Check the console logs for debug information</li>
+        <li>Review the results below</li>
+      </ol>
+    </div>
+
+    <button onclick="runTest()">Run Test</button>
+    <button onclick="clearResults()">Clear Results</button>
+
+    <div id="results"></div>
+  </div>
+
+  <script>
+    const BACKEND_URL = 'https://energy-assistant-prototype-production.up.railway.app';
+    
+    function log(message, isError = false) {
+      const resultsDiv = document.getElementById('results');
+      const stepDiv = document.createElement('div');
+      stepDiv.className = isError ? 'step error' : 'step';
+      stepDiv.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+      resultsDiv.appendChild(stepDiv);
+      console.log(message);
+    }
+
+    function logResult(title, data) {
+      const resultsDiv = document.getElementById('results');
+      const resultDiv = document.createElement('div');
+      resultDiv.className = 'result';
+      resultDiv.innerHTML = `<strong>${title}:</strong>\n${JSON.stringify(data, null, 2)}`;
+      resultsDiv.appendChild(resultDiv);
+    }
+
+    function clearResults() {
+      document.getElementById('results').innerHTML = '';
+    }
+
+    async function runTest() {
+      clearResults();
+      log('🚀 Starting test...');
+
+      try {
+        // Step 1: Register
+        const email = `test-frontend-${Date.now()}@example.com`;
+        const password = 'TestPassword123';
+        
+        log(`📝 Step 1: Registering user: ${email}`);
+        
+        const registerResponse = await fetch(`${BACKEND_URL}/api/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        if (!registerResponse.ok) {
+          throw new Error(`Registration failed: ${registerResponse.status}`);
+        }
+
+        const registerData = await registerResponse.json();
+        log('✅ User registered successfully');
+        logResult('Registration Response', registerData);
+
+        const token = registerData.token;
+
+        // Step 2: Wait for seeding
+        log('⏳ Step 2: Waiting 3 seconds for data seeding...');
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+        // Step 3: Fetch chart data
+        log('📊 Step 3: Fetching chart data for today...');
+        
+        const chartResponse = await fetch(`${BACKEND_URL}/api/daily-assistant/chart-data?date=today`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!chartResponse.ok) {
+          throw new Error(`Chart data fetch failed: ${chartResponse.status}`);
+        }
+
+        const chartData = await chartResponse.json();
+        log('✅ Chart data received');
+
+        // Step 4: Analyze energy events
+        log('🔍 Step 4: Analyzing energy events...');
+        
+        const eventCount = chartData.energyEvents?.length || 0;
+        log(`Found ${eventCount} energy event(s)`);
+        
+        if (eventCount > 0) {
+          logResult('Energy Events', chartData.energyEvents);
+        }
+
+        // Step 5: Check red shading
+        const redIntervals = chartData.intervals.filter(i => i.shading === 'red');
+        log(`Found ${redIntervals.length} interval(s) with red shading`);
+        
+        if (redIntervals.length > 0) {
+          logResult('Red Intervals (first 3)', redIntervals.slice(0, 3));
+        }
+
+        // Step 6: Check event type mapping
+        log('🗺️ Step 6: Simulating event type map creation...');
+        
+        const eventTypeMap = new Map();
+        chartData.energyEvents?.forEach(event => {
+          const eventStart = new Date(event.startTime);
+          const eventEnd = new Date(event.endTime);
+          
+          chartData.intervals.forEach(interval => {
+            const [hours, minutes] = interval.startTime.split(':').map(Number);
+            const intervalDate = new Date(chartData.date);
+            intervalDate.setHours(hours, minutes, 0, 0);
+            const intervalEnd = new Date(intervalDate);
+            intervalEnd.setMinutes(intervalEnd.getMinutes() + 30);
+            
+            if (eventStart < intervalEnd && eventEnd > intervalDate) {
+              eventTypeMap.set(interval.startTime, event.eventType);
+            }
+          });
+        });
+
+        log(`Event type map has ${eventTypeMap.size} entries`);
+        logResult('Event Type Map', Array.from(eventTypeMap.entries()));
+
+        // Step 7: Check arrow display logic
+        log('🎯 Step 7: Checking arrow display logic...');
+        
+        let arrowCount = 0;
+        chartData.intervals.forEach((interval, index) => {
+          if (interval.shading === 'red' && index < chartData.intervals.length - 1) {
+            const eventType = eventTypeMap.get(interval.startTime);
+            if (eventType) {
+              arrowCount++;
+              const arrow = eventType === 'INCREASE_CONSUMPTION' ? '↑' : '↓';
+              log(`  ${interval.startTime}: ${arrow} ${eventType}`);
+            }
+          }
+        });
+
+        log(`✅ ${arrowCount} arrow(s) should be displayed on the chart`);
+
+        // Summary
+        log('');
+        log('📋 Summary:');
+        log(`  - Energy events: ${eventCount}`);
+        log(`  - Red intervals: ${redIntervals.length}`);
+        log(`  - Event type map entries: ${eventTypeMap.size}`);
+        log(`  - Arrows to display: ${arrowCount}`);
+        log('');
+        log('✅ Test complete! Check the results above.');
+
+      } catch (error) {
+        log(`❌ Error: ${error.message}`, true);
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>
