@@ -15,6 +15,10 @@ interface EnergyChartProps {
 }
 
 export default function EnergyChart({ data, showCurrentTime = false }: EnergyChartProps) {
+  // Debug: Log energy events
+  console.log('Energy events received:', data.energyEvents);
+  console.log('Number of intervals with red shading:', data.intervals.filter(i => i.shading === 'red').length);
+  
   // Transform data for Recharts
   const chartData = data.intervals.map((interval, index) => ({
     time: interval.startTime,
@@ -67,6 +71,10 @@ export default function EnergyChart({ data, showCurrentTime = false }: EnergyCha
       }
     });
   });
+  
+  // Debug: Log event type map
+  console.log('Event type map size:', eventTypeMap.size);
+  console.log('Event type map entries:', Array.from(eventTypeMap.entries()));
 
   // Calculate current time position for the vertical line
   const getCurrentTimePosition = () => {
