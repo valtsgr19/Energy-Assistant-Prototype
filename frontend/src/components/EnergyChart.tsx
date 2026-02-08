@@ -414,15 +414,6 @@ export default function EnergyChart({ data, showCurrentTime = false }: EnergyCha
             <span className="text-gray-700">Avoid high usage</span>
           </div>
         </div>
-
-        {/* Time period labels */}
-        <div className="mt-2 sm:mt-4 flex justify-between text-xs text-gray-500">
-          <span>00:00</span>
-          <span className="hidden sm:inline">06:00</span>
-          <span>12:00</span>
-          <span className="hidden sm:inline">18:00</span>
-          <span>24:00</span>
-        </div>
       </div>
 
       {/* Tariff Chart Section */}
@@ -539,15 +530,6 @@ export default function EnergyChart({ data, showCurrentTime = false }: EnergyCha
             />
           </ComposedChart>
         </ResponsiveContainer>
-
-        {/* Time period labels */}
-        <div className="mt-2 sm:mt-4 flex justify-between text-xs text-gray-500">
-          <span>00:00</span>
-          <span className="hidden sm:inline">06:00</span>
-          <span>12:00</span>
-          <span className="hidden sm:inline">18:00</span>
-          <span>24:00</span>
-        </div>
       </div>
     </div>
   );
