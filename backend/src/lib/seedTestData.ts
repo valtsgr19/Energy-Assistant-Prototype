@@ -166,6 +166,60 @@ export async function seedTestData(userId: string, includeEV: boolean = false) {
 
   console.log('✅ Tariff structure created');
 
+  // Create energy events (at least 1 every 2 days for the next 30 days)
+  // Delete existing events first
+  await prisma.energyEvent.deleteMany({
+    where: {
+      OR: [
+        { targetUserIds: userId },
+        { targetUserIds: 'ALL' }
+      ]
+    }
+  });
+
+  const events = [];
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Create events for next 30 days (1 event every 2 days)
+  for (let day = 0; day < 30; day += 2) {
+    const eventDate = new Date(today);
+    eventDate.setDate(eventDate.getDate() + day);
+    
+    // Alternate between INCREASE and DECREASE events
+    const eventType = day % 4 === 0 ? 'DECREASE_CONSUMPTION' : 'INCREASE_CONSUMPTION';
+    
+    // Random time between 10 AM and 8 PM
+    const startHour = 10 + Math.floor(Math.random() * 10);
+    const startTime = new Date(eventDate);
+    startTime.setHours(startHour, 0, 0, 0);
+    
+    // Event duration: 2-4 hours
+    const duration = 2 + Math.floor(Math.random() * 3);
+    const endTime = new Date(startTime);
+    endTime.setHours(startTime.getHours() + duration);
+    
+    events.push({
+      eventType,
+      startTime,
+      endTime,
+      incentiveDescription: eventType === 'DECREASE_CONSUMPTION' 
+        ? 'Reduce your energy usage during peak demand to earn rewards'
+        : 'Increase your energy usage during excess renewable generation',
+      incentiveAmountDollars: 5.0 + Math.random() * 10.0, // $5-$15
+      targetUserIds: 'ALL' // Target all users
+    });
+  }
+
+  // Create events in database
+  for (const event of events) {
+    await prisma.energyEvent.create({
+      data: event
+    });
+  }
+
+  console.log(`✅ Created ${events.length} energy events`);
+
   console.log('✅ Test data seeding complete!');
 }
 
