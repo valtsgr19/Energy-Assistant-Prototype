@@ -78,10 +78,26 @@ I just ran a test with a fresh account:
 ```
 ✅ User created: test-events-1770531846@example.com
 ✅ Energy events: 1 array found
-✅ Red intervals: 4 (for today's event 13:00-15:00)
+✅ Red intervals: 4 (for event during specified time window)
 ✅ Event type map: 4 entries
 ✅ Arrows should display: 4 arrows
 ```
+
+## ⏰ Event Time Windows
+
+Events are now scheduled at realistic times:
+
+- **INCREASE consumption events**: 10:00-14:00 (1-2 hours)
+  - During high solar generation
+  - Encourages using excess renewable energy
+  - Shows ↑ arrow
+
+- **DECREASE consumption events**: 18:00-22:00 (1-2 hours)
+  - During peak demand periods
+  - Encourages reducing consumption
+  - Shows ↓ arrow
+
+This makes the events more realistic and aligned with actual grid conditions!
 
 ## 🔍 Why Old Accounts Don't Have Events
 

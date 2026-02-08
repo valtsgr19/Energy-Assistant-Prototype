@@ -86,6 +86,17 @@ Open `test-frontend-events.html` in a browser:
 
 ## Event Display Logic
 
+### Event Time Windows:
+- **INCREASE_CONSUMPTION events**: 10:00-14:00 (1-2 hours duration)
+  - Occurs during high solar generation
+  - Encourages using excess renewable energy
+  - Arrow: ↑
+  
+- **DECREASE_CONSUMPTION events**: 18:00-22:00 (1-2 hours duration)
+  - Occurs during peak demand periods
+  - Encourages reducing consumption
+  - Arrow: ↓
+
 ### When Arrows Show:
 1. Interval has `shading === 'red'` (backend marks it)
 2. `eventTypeMap` has an entry for that interval time

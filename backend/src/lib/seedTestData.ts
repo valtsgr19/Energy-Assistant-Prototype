@@ -167,13 +167,10 @@ export async function seedTestData(userId: string, includeEV: boolean = false) {
   console.log('✅ Tariff structure created');
 
   // Create energy events (at least 1 every 2 days for the next 30 days)
-  // Delete existing events first
+  // Delete existing events for this user
   await prisma.energyEvent.deleteMany({
     where: {
-      OR: [
-        { targetUserIds: userId },
-        { targetUserIds: 'ALL' }
-      ]
+      targetUserIds: userId
     }
   });
 
@@ -187,17 +184,44 @@ export async function seedTestData(userId: string, includeEV: boolean = false) {
     eventDate.setDate(eventDate.getDate() + day);
     
     // Alternate between INCREASE and DECREASE events
-    const eventType = day % 4 === 0 ? 'DECREASE_CONSUMPTION' : 'INCREASE_CONSUMPTION';
+    // INCREASE: during solar generation (10:00-14:00)
+    // DECREASE: during peak demand (18:00-22:00)
+    const eventType = day % 4 === 0 ? 'INCREASE_CONSUMPTION' : 'DECREASE_CONSUMPTION';
     
-    // Random time between 10 AM and 8 PM
-    const startHour = 10 + Math.floor(Math.random() * 10);
+    console.log(`Day ${day}: ${eventType}`);
+    
+    let startHour: number;
+    let duration: number;
+    
+    if (eventType === 'INCREASE_CONSUMPTION') {
+      // INCREASE events: 10:00-14:00, max 2 hours duration
+      startHour = 10 + Math.floor(Math.random() * 3); // 10, 11, or 12
+      duration = Math.random() < 0.5 ? 1 : 2; // 50% chance of 1 or 2 hours
+      // Ensure event doesn't go past 14:00
+      const endHour = startHour + duration;
+      if (endHour > 14) {
+        duration = 14 - startHour;
+      }
+      console.log(`  INCREASE: ${startHour}:00 + ${duration}h = ${startHour + duration}:00`);
+    } else {
+      // DECREASE events: 18:00-22:00, max 2 hours duration
+      startHour = 18 + Math.floor(Math.random() * 3); // 18, 19, or 20
+      duration = Math.random() < 0.5 ? 1 : 2; // 50% chance of 1 or 2 hours
+      // Ensure event doesn't go past 22:00
+      const endHour = startHour + duration;
+      if (endHour > 22) {
+        duration = 22 - startHour;
+      }
+      console.log(`  DECREASE: ${startHour}:00 + ${duration}h = ${startHour + duration}:00`);
+    }
+    
     const startTime = new Date(eventDate);
     startTime.setHours(startHour, 0, 0, 0);
     
-    // Event duration: 2-4 hours
-    const duration = 2 + Math.floor(Math.random() * 3);
     const endTime = new Date(startTime);
     endTime.setHours(startTime.getHours() + duration);
+    
+    console.log(`  Start: ${startTime.toISOString()}, End: ${endTime.toISOString()}, Duration: ${duration} hours`);
     
     events.push({
       eventType,
@@ -207,7 +231,7 @@ export async function seedTestData(userId: string, includeEV: boolean = false) {
         ? 'Reduce your energy usage during peak demand to earn rewards'
         : 'Increase your energy usage during excess renewable generation',
       incentiveAmountDollars: 5.0 + Math.random() * 10.0, // $5-$15
-      targetUserIds: 'ALL' // Target all users
+      targetUserIds: userId // Target this specific user
     });
   }
 
