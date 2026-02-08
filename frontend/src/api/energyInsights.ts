@@ -5,19 +5,21 @@
 import { apiClient } from './client';
 
 export interface DisaggregationData {
-  hvacKwh: number;
-  waterHeaterKwh: number;
-  evChargingKwh: number;
-  baseloadKwh: number;
-  discretionaryKwh: number;
+  heatingCoolingKwh: number;
+  hotWaterKwh: number;
+  appliancesKwh: number;
+  fridgeFreezerKwh: number;
+  clothesDryerKwh: number;
+  tvElectronicsKwh: number;
+  lightingOtherKwh: number;
   totalKwh: number;
-  hvacPercentage: number;
-  waterHeaterPercentage: number;
-  evChargingPercentage: number;
-  baseloadPercentage: number;
-  discretionaryPercentage: number;
-  evPatternDetected: boolean;
-  hasConfiguredEv: boolean;
+  heatingCoolingPercentage: number;
+  hotWaterPercentage: number;
+  appliancesPercentage: number;
+  fridgeFreezerPercentage: number;
+  clothesDryerPercentage: number;
+  tvElectronicsPercentage: number;
+  lightingOtherPercentage: number;
 }
 
 export interface SolarPerformanceData {

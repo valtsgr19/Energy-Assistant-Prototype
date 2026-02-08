@@ -112,34 +112,46 @@ export default function EnergyInsights() {
             <>
               <div className="space-y-3 mb-4">
                 <UsageBar 
-                  label="HVAC" 
-                  kwh={disaggregation.hvacKwh} 
-                  percentage={disaggregation.hvacPercentage}
+                  label="Heating & Cooling" 
+                  kwh={disaggregation.heatingCoolingKwh} 
+                  percentage={disaggregation.heatingCoolingPercentage}
                   color="bg-orange-500"
+                  description="Largest energy consumer"
                 />
                 <UsageBar 
-                  label="Water Heater" 
-                  kwh={disaggregation.waterHeaterKwh} 
-                  percentage={disaggregation.waterHeaterPercentage}
+                  label="Hot Water Systems" 
+                  kwh={disaggregation.hotWaterKwh} 
+                  percentage={disaggregation.hotWaterPercentage}
                   color="bg-red-500"
+                  description="Major consistent contributor"
                 />
                 <UsageBar 
-                  label="EV Charging" 
-                  kwh={disaggregation.evChargingKwh} 
-                  percentage={disaggregation.evChargingPercentage}
-                  color="bg-green-500"
-                />
-                <UsageBar 
-                  label="Baseload" 
-                  kwh={disaggregation.baseloadKwh} 
-                  percentage={disaggregation.baseloadPercentage}
+                  label="Appliances & Equipment" 
+                  kwh={disaggregation.appliancesKwh} 
+                  percentage={disaggregation.appliancesPercentage}
                   color="bg-blue-500"
+                  description="Fridges, dryers, TVs, etc."
                 />
+                <div className="ml-6 space-y-2 text-sm text-gray-600">
+                  <div className="flex justify-between">
+                    <span>• Fridges/Freezers</span>
+                    <span>{disaggregation.fridgeFreezerPercentage.toFixed(0)}% ({disaggregation.fridgeFreezerKwh.toFixed(1)} kWh)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>• Clothes Dryers</span>
+                    <span>{disaggregation.clothesDryerPercentage.toFixed(0)}% ({disaggregation.clothesDryerKwh.toFixed(1)} kWh)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>• TVs & Electronics</span>
+                    <span>{disaggregation.tvElectronicsPercentage.toFixed(0)}% ({disaggregation.tvElectronicsKwh.toFixed(1)} kWh)</span>
+                  </div>
+                </div>
                 <UsageBar 
-                  label="Discretionary" 
-                  kwh={disaggregation.discretionaryKwh} 
-                  percentage={disaggregation.discretionaryPercentage}
-                  color="bg-purple-500"
+                  label="Lighting & Others" 
+                  kwh={disaggregation.lightingOtherKwh} 
+                  percentage={disaggregation.lightingOtherPercentage}
+                  color="bg-yellow-500"
+                  description="Lighting and miscellaneous"
                 />
               </div>
 
@@ -149,23 +161,6 @@ export default function EnergyInsights() {
                   <span className="text-gray-900">{disaggregation.totalKwh.toFixed(1)} kWh</span>
                 </div>
               </div>
-
-              {/* EV Pattern Detection Alert */}
-              {disaggregation.evPatternDetected && !disaggregation.hasConfiguredEv && (
-                <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <div className="flex items-start">
-                    <svg className="w-5 h-5 text-green-600 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                    <div>
-                      <p className="text-sm font-medium text-green-900">EV Charging Detected</p>
-                      <p className="text-xs text-green-700 mt-1">
-                        We detected EV charging patterns. Add your EV in Settings to get personalized charging advice.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
             </>
           ) : (
             <p className="text-sm text-gray-600 text-center py-8">No consumption data available for the last 30 days</p>
@@ -325,13 +320,17 @@ interface UsageBarProps {
   kwh: number;
   percentage: number;
   color: string;
+  description?: string;
 }
 
-function UsageBar({ label, kwh, percentage, color }: UsageBarProps) {
+function UsageBar({ label, kwh, percentage, color, description }: UsageBarProps) {
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
-        <span className="text-sm font-medium text-gray-700">{label}</span>
+        <div>
+          <span className="text-sm font-medium text-gray-700">{label}</span>
+          {description && <span className="text-xs text-gray-500 ml-2">({description})</span>}
+        </div>
         <span className="text-sm text-gray-600">{kwh.toFixed(1)} kWh ({percentage.toFixed(0)}%)</span>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-2">
