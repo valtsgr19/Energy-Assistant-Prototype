@@ -6,7 +6,7 @@
  * 2. Tariff Chart: Time-of-use pricing
  */
 
-import { ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ReferenceArea } from 'recharts';
+import { ComposedChart, Area, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ReferenceArea } from 'recharts';
 import { ChartDataResponse } from '../api/dailyAssistant';
 
 interface EnergyChartProps {
@@ -231,15 +231,12 @@ export default function EnergyChart({ data, showCurrentTime = false }: EnergyCha
               name="Solar"
             />
             
-            {/* Consumption line */}
-            <Line
-              type="monotone"
+            {/* Consumption bars */}
+            <Bar
               dataKey="consumption"
-              stroke="#3b82f6"
-              strokeWidth={2}
-              dot={false}
+              fill="#3b82f6"
               name="Consumption"
-              connectNulls
+              radius={[4, 4, 0, 0]}
             />
           </ComposedChart>
         </ResponsiveContainer>
@@ -314,15 +311,12 @@ export default function EnergyChart({ data, showCurrentTime = false }: EnergyCha
               name="Solar"
             />
             
-            {/* Consumption line */}
-            <Line
-              type="monotone"
+            {/* Consumption bars */}
+            <Bar
               dataKey="consumption"
-              stroke="#3b82f6"
-              strokeWidth={2}
-              dot={false}
+              fill="#3b82f6"
               name="Consumption"
-              connectNulls
+              radius={[4, 4, 0, 0]}
             />
           </ComposedChart>
         </ResponsiveContainer>
