@@ -52,41 +52,42 @@ export async function seedTestData(userId: string, includeEV: boolean = false) {
       const hour = Math.floor(interval / 2);
       
       // Create realistic consumption patterns
-      let consumption = 0.2; // Base load (always-on devices: fridge, router, etc.)
+      // Target: ~700 kWh/month = ~23.3 kWh/day = ~0.486 kWh per 30-min interval
+      let consumption = 0.03; // Base load (always-on devices: fridge, router, etc.)
 
       // HVAC usage (moderate, mainly during day and evening)
       if (hour >= 8 && hour < 22) {
-        consumption += 0.3 + Math.random() * 0.2; // 0.3-0.5 kWh
+        consumption += 0.03 + Math.random() * 0.025; // 0.03-0.055 kWh
       }
 
       // Water heater peaks (morning and evening showers)
       if ((hour >= 6 && hour < 9) || (hour >= 18 && hour < 21)) {
-        consumption += 0.4 + Math.random() * 0.2; // 0.4-0.6 kWh
+        consumption += 0.045 + Math.random() * 0.03; // 0.045-0.075 kWh
       }
 
       // Cooking and discretionary usage (evening)
       if (hour >= 17 && hour < 21) {
-        consumption += 0.3 + Math.random() * 0.3; // 0.3-0.6 kWh
+        consumption += 0.03 + Math.random() * 0.03; // 0.03-0.06 kWh
       }
 
       // Occasional high usage (washing machine, dryer, dishwasher)
-      if (hour >= 10 && hour < 20 && Math.random() > 0.85) {
-        consumption += 0.5 + Math.random() * 0.5; // 0.5-1.0 kWh
+      if (hour >= 10 && hour < 20 && Math.random() > 0.96) {
+        consumption += 0.075 + Math.random() * 0.075; // 0.075-0.15 kWh
       }
 
       // EV charging (overnight, if enabled)
       if (includeEV && (hour >= 23 || hour < 6)) {
         // Charge 3-4 nights per week
         if (Math.random() > 0.5) {
-          consumption += 2.5 + Math.random() * 1.0; // 2.5-3.5 kWh (7kW charger for 30 min)
+          consumption += 0.6 + Math.random() * 0.25; // 0.6-0.85 kWh (7kW charger for 30 min)
         }
       }
 
       // Add some random variation
-      consumption += Math.random() * 0.1 - 0.05; // ±0.05 kWh
+      consumption += Math.random() * 0.02 - 0.01; // ±0.01 kWh
       
       // Ensure non-negative
-      consumption = Math.max(0.1, consumption);
+      consumption = Math.max(0.025, consumption);
 
       dataPoints.push({
         userId,
