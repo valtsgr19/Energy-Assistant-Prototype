@@ -53,26 +53,26 @@ export async function seedTestData(userId: string, includeEV: boolean = false) {
       
       // Create realistic consumption patterns
       // Target: ~700 kWh/month = ~23.3 kWh/day = ~0.486 kWh per 30-min interval
-      let consumption = 0.03; // Base load (always-on devices: fridge, router, etc.)
+      let consumption = 0.18; // Base load (always-on devices: fridge, router, standby power)
 
       // HVAC usage (moderate, mainly during day and evening)
       if (hour >= 8 && hour < 22) {
-        consumption += 0.03 + Math.random() * 0.025; // 0.03-0.055 kWh
+        consumption += 0.18 + Math.random() * 0.15; // 0.18-0.33 kWh
       }
 
       // Water heater peaks (morning and evening showers)
       if ((hour >= 6 && hour < 9) || (hour >= 18 && hour < 21)) {
-        consumption += 0.045 + Math.random() * 0.03; // 0.045-0.075 kWh
+        consumption += 0.22 + Math.random() * 0.18; // 0.22-0.40 kWh
       }
 
       // Cooking and discretionary usage (evening)
       if (hour >= 17 && hour < 21) {
-        consumption += 0.03 + Math.random() * 0.03; // 0.03-0.06 kWh
+        consumption += 0.18 + Math.random() * 0.15; // 0.18-0.33 kWh
       }
 
       // Occasional high usage (washing machine, dryer, dishwasher)
-      if (hour >= 10 && hour < 20 && Math.random() > 0.96) {
-        consumption += 0.075 + Math.random() * 0.075; // 0.075-0.15 kWh
+      if (hour >= 10 && hour < 20 && Math.random() > 0.85) {
+        consumption += 0.45 + Math.random() * 0.45; // 0.45-0.90 kWh
       }
 
       // EV charging (overnight, if enabled)
